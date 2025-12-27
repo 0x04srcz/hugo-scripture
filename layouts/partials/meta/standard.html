@@ -3,15 +3,15 @@
 <meta http-equiv="content-type" content="text/html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {{ if or (eq .Kind "taxonomy") (eq .Kind "term") }}
-<meta name="robots" content="noindex,follow">
+  <meta name="robots" content="noindex,follow">
 {{ end }}
 <title itemprop="name">{{- if .Title }}{{ .Title }} | {{ end -}}{{ .Site.Title }}</title>
 
 {{- $pageTitle := "" -}}
 {{- if .Title -}}
-{{-  $pageTitle = printf "%s | %s" .Title .Site.Title -}}
+  {{-  $pageTitle = printf "%s | %s" .Title .Site.Title -}}
 {{-  else -}}
-{{-  $pageTitle = .Site.Title -}}
+  {{-  $pageTitle = .Site.Title -}}
 {{- end -}}
 <meta property="og:title" content="{{ $pageTitle }}" />
 <meta name="twitter:title" content="{{ $pageTitle }}" />
@@ -22,9 +22,9 @@
 {{/* ===================== Description ===================== */}}
 {{- $description := "" -}}
 {{- if .Params.description -}}
-{{- $description = trim .Params.description "\n" -}}
+  {{- $description = trim .Params.description "\n" -}}
 {{- else if .Site.Params.description -}}
-{{- $description = trim .Site.Params.description "\n" -}}
+  {{- $description = trim .Site.Params.description "\n" -}}
 {{- end -}}
 
 <meta name="description" content="{{ $description }}">
@@ -35,10 +35,10 @@
 <meta property="og:locale" content="{{ .Site.LanguageCode }}" />
 <meta name="language" content="{{ .Site.LanguageCode }}" />
 {{- range .AllTranslations }}
-<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}" title="{{ .Language.LanguageName }}" />
+  <link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}" title="{{ .Language.LanguageName }}" />
 {{- end }}
 {{ range .AlternativeOutputFormats }}
-<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}">
+  <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}">
 {{ end }}
 
 {{/* ===================== Image selection ===================== */}}
@@ -50,116 +50,114 @@
 {{- if not $image }}{{ with index .Params.images 0 }}{{ $image = . }} {{ end }}{{ end -}}
 
 {{- if and (not $image) .IsPage -}}
-{{- with or (.Resources.GetMatch "cover*") (.Resources.GetMatch "featured*") -}}
-{{- $image = .RelPermalink -}}
-{{- end -}}
+  {{- with or (.Resources.GetMatch "cover*") (.Resources.GetMatch "featured*") -}}
+    {{- $image = .RelPermalink -}}
+  {{- end -}}
 {{- end -}}
 
 {{/* ===================== Fallback: generate OG locally ===================== */}}
 {{- if not $image -}}
-{{- $bg := resources.Get "og/base.png" -}} {{/* put your background at assets/og/base.png */}}
-{{- if $bg -}}
-{{- with .Resources.GetMatch "og-bg*" -}} {{ $bg = . }} {{ end -}}
+  {{- $bg := resources.Get "og/base.png" -}} {{/* put your background at assets/og/base.png */}}
+  {{- if $bg -}}
+    {{- with .Resources.GetMatch "og-bg*" -}} {{ $bg = . }} {{ end -}}
 
-{{- $title := .Title -}}
-{{- if not $title }}{{ $title = .Site.Title }}{{ end -}}
+    {{- $title := .Title -}}
+    {{- if not $title }}{{ $title = .Site.Title }}{{ end -}}
 
-{{- $slug := "" -}}
-{{- if .File -}}
-{{- $slug = .File.BaseFileName -}}
-{{- else -}}
-{{- $slug = .Title | urlize -}}
-{{- end -}}
+    {{- $slug := "" -}}
+    {{- if .File -}}
+      {{- $slug = .File.BaseFileName -}}
+    {{- else -}}
+      {{- $slug = .Title | urlize -}}
+    {{- end -}}
 
-{{- $outName := printf "og/%s-og.png" $slug -}}
+    {{- $outName := printf "og/%s-og.png" $slug -}}
 
-{{- $font := resources.Get "fonts/Aileron-Bold.otf" -}}
+    {{- $font := resources.Get "fonts/Aileron-Bold.otf" -}}
 
-{{- $w := $bg.Width -}}
-{{- $h := $bg.Height -}}
-{{- $cx := div $w 2 -}}
-{{- $cy := div $h 2 -}}
+    {{- $w := $bg.Width -}}
+    {{- $h := $bg.Height -}}
+    {{- $cx := div $w 2 -}}
+    {{- $cy := div $h 2 -}}
 
-{{/* ---- Title: wrap + size by line count ---- */}}
-{{- $titleMax := 22 -}} {{/* chars per line; tune per font */}}
-{{- $twords := split (upper $title) " " -}}
-{{- $tlines := slice -}}
-{{- $tline := "" -}}
+    {{/* ---- Title: wrap + size by line count ---- */}}
+    {{- $titleMax := 22 -}} {{/* chars per line; tune per font */}}
+    {{- $twords := split (upper $title) " " -}}
+    {{- $tlines := slice -}}
+    {{- $tline := "" -}}
 
-{{- range $twords -}}
-{{- $candidate := cond (eq $tline "") . (printf "%s %s" $tline .) -}}
-{{- if gt (len $candidate) $titleMax -}}
-{{- $tlines = $tlines | append $tline -}}
-{{- $tline = . -}}
-{{- else -}}
-{{- $tline = $candidate -}}
-{{- end -}}
-{{- end -}}
-{{- if ne $tline "" -}}{{- $tlines = $tlines | append $tline -}}{{- end -}}
+    {{- range $twords -}}
+      {{- $candidate := cond (eq $tline "") . (printf "%s %s" $tline .) -}}
+      {{- if gt (len $candidate) $titleMax -}}
+        {{- $tlines = $tlines | append $tline -}}
+        {{- $tline = . -}}
+      {{- else -}}
+        {{- $tline = $candidate -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if ne $tline "" -}}{{- $tlines = $tlines | append $tline -}}{{- end -}}
 
-{{- if gt (len $tlines) 3 -}}
-{{- $tlines = first 3 $tlines -}}
-{{- $tlines = (first 2 $tlines) | append (printf "%v…" (index $tlines 2)) -}}
-{{- end -}}
+    {{- if gt (len $tlines) 3 -}}
+      {{- $tlines = first 3 $tlines -}}
+      {{- $tlines = (first 2 $tlines) | append (printf "%v…" (index $tlines 2)) -}}
+    {{- end -}}
 
-{{- $titleLineCount := len $tlines -}}
-{{- $titleSize := 120 -}}
-{{- if eq $titleLineCount 2 -}}{{- $titleSize = 86 -}}{{- end -}}
-{{- if eq $titleLineCount 3 -}}{{- $titleSize = 72 -}}{{- end -}}
+    {{- $titleLineCount := len $tlines -}}
+    {{- $titleSize := 120 -}}
+    {{- if eq $titleLineCount 2 -}}{{- $titleSize = 86 -}}{{- end -}}
+    {{- if eq $titleLineCount 3 -}}{{- $titleSize = 72 -}}{{- end -}}
 
-{{- $titleText := delimit $tlines "\n" -}}
+    {{- $titleText := delimit $tlines "\n" -}}
 
-{{/* ---- Description: wrap into multiple lines ---- */}}
-{{- $descMax := 70 -}}
-{{- $dwords := split $description " " -}}
-{{- $dlines := slice -}}
-{{- $dline := "" -}}
+    {{/* ---- Description: wrap into multiple lines ---- */}}
+    {{- $descMax := 70 -}}
+    {{- $dwords := split $description " " -}}
+    {{- $dlines := slice -}}
+    {{- $dline := "" -}}
 
-{{- range $dwords -}}
-{{- $candidate := cond (eq (trim $dline " ") "") . (printf "%s %s" (trim $dline " ") .) -}}
-{{- if gt (len $candidate) $descMax -}}
-{{- $dlines = $dlines | append (trim $dline " ") -}}
-{{- $dline = . -}}
-{{- else -}}
-{{- $dline = $candidate -}}
-{{- end -}}
-{{- end -}}
-{{- if ne (trim $dline " ") "" -}}
-{{- $dlines = $dlines | append (trim $dline " ") -}}
-{{- end -}}
+    {{- range $dwords -}}
+      {{- $candidate := cond (eq (trim $dline " ") "") . (printf "%s %s" (trim $dline " ") .) -}}
+      {{- if gt (len $candidate) $descMax -}}
+        {{- $dlines = $dlines | append (trim $dline " ") -}}
+        {{- $dline = . -}}
+      {{- else -}}
+        {{- $dline = $candidate -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if ne (trim $dline " ") "" -}}
+      {{- $dlines = $dlines | append (trim $dline " ") -}}
+    {{- end -}}
 
-{{- $descText := delimit $dlines "\n" -}}
+    {{- $descText := delimit $dlines "\n" -}}
 
-{{/* ---- Render opts ---- */}}
-{{- $titleOpts := dict
-"size" $titleSize
-"color" "#ffffff"
-"x" $cx
-"y" (sub $cy 60)
-"alignx" "center"
-"aligny" "center"
-"linespacing" 1.1
--}}
+    {{/* ---- Render opts ---- */}}
+    {{- $titleOpts := dict
+      "size" $titleSize
+      "color" "#ffffff"
+      "x" $cx
+      "y" (sub $cy 60)
+      "alignx" "center"
+      "aligny" "center"
+    -}}
 
-{{- $descOpts := dict
-"size" 20
-"color" "#ffffff"
-"x" $cx
-"y" (add $cy 250)
-"alignx" "center"
-"aligny" "center"
-"linespacing" 1.3
--}}
+    {{- $descOpts := dict
+      "size" 35
+      "color" "#ffffff"
+      "x" $cx
+      "y" (add $cy 250)
+      "alignx" "center"
+      "aligny" "center"
+    -}}
 
-{{- if $font }}{{- $titleOpts = merge $titleOpts (dict "font" $font) -}}{{- end -}}
-{{- if $font }}{{- $descOpts  = merge $descOpts  (dict "font" $font) -}}{{- end -}}
+    {{- if $font }}{{- $titleOpts = merge $titleOpts (dict "font" $font) -}}{{- end -}}
+    {{- if $font }}{{- $descOpts  = merge $descOpts  (dict "font" $font) -}}{{- end -}}
 
-{{- $img := $bg | images.Filter (images.Text $titleText $titleOpts) -}}
-{{- $img = $img | images.Filter (images.Text $descText $descOpts) -}}
+    {{- $img := $bg | images.Filter (images.Text $titleText $titleOpts) -}}
+    {{- $img = $img | images.Filter (images.Text $descText $descOpts) -}}
 
 
-{{- if lt $img.Width 1200 -}}
-{{- $img = $img.Fit "1200x630" -}}
+    {{- if lt $img.Width 1200 -}}
+      {{- $img = $img.Fit "1200x630" -}}
     {{- end -}}
 
     {{- $final := $img | resources.Copy $outName -}}
