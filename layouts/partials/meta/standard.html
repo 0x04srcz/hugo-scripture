@@ -108,6 +108,8 @@
     {{- if eq $titleLineCount 3 -}}{{- $titleSize = 72 -}}{{- end -}}
 
     {{- $titleText := delimit $tlines "\n" -}}
+    {{- $ogColor := .Site.Params.scripture.ogColor | default "#ffffff" -}}
+
 
     {{/* ---- Description: wrap into multiple lines ---- */}}
     {{- $descMax := 70 -}}
@@ -133,7 +135,7 @@
     {{/* ---- Render opts ---- */}}
     {{- $titleOpts := dict
       "size" $titleSize
-      "color" "#ffffff"
+      "color" $ogColor
       "x" $cx
       "y" (sub $cy 60)
       "alignx" "center"
@@ -142,7 +144,7 @@
 
     {{- $descOpts := dict
       "size" 35
-      "color" "#ffffff"
+      "color" $ogColor
       "x" $cx
       "y" (add $cy 250)
       "alignx" "center"
