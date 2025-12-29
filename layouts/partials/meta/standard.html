@@ -113,7 +113,7 @@
 
     {{/* ---- Description: wrap into multiple lines ---- */}}
     {{- $descMax := 70 -}}
-    {{- $dwords := split $description " " -}}
+    {{- $dwords := split (title $description) " " -}}
     {{- $dlines := slice -}}
     {{- $dline := "" -}}
 
