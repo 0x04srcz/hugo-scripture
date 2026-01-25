@@ -30,3 +30,8 @@
 .jentry code {
   width: 100%;
 }
+
+li.log {
+  margin-top: 20px;
+  text-indent: 10px;
+}
