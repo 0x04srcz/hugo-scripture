@@ -1,0 +1,17 @@
+{{ define "main" }}
+<section>
+  <h1>{{ .Title }}</h1>
+  <p class="subtitle">All Articles</p>
+
+  {{ $pages := .RegularPages.ByDate.Reverse }}
+
+  {{ range $day := ($pages.GroupByDate "2006-01-02") }}
+  <h3>{{ time.Format "2 Jan 2006" $day.Key }}</h3>
+  <ul class="jentry">
+    {{ range $p := $day.Pages.ByDate.Reverse }}
+    {{ partial "jentry" $p }}
+    {{ end }}
+  </ul>
+  {{ end }}
+</section>
+{{ end }}
