@@ -26,3 +26,7 @@
 .jentry p {
   display: inline;
 }
+
+.jentry code {
+  width: 100%;
+}
