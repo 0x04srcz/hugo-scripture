@@ -26,7 +26,6 @@
     </section>
   {{ end }}
 
-  <hr/>
   <h2 class="posts-item-note" aria-label="Recent Posts">Recent Articles</h2>
   {{/* Show last 5 posts in reverse date order */}}
   {{ $pagesToShow := where .Site.RegularPages "Type" "in" site.Params.mainSections }}
