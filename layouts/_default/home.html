@@ -2,27 +2,29 @@
 <h1>{{ .Site.Title }}</h1>
 <p class="subtitle">{{ .Site.Params.Author.Name }}</p>
 <section>{{ .Content }}
-  <hr/>
-  <h2 class="">Recent Logs</h2>
   {{ $jentry := where .Site.RegularPages "Section" "journal" }}
   {{ $latest := first 5 (sort $jentry "Date" "desc") }}
 
-  <section class="timeline">
-    {{/* $jentry should be a Pages collection */}}
-    {{ range $day := ($latest.GroupByDate "2006-01-02") }}
-      <h3>{{ time.Format "2 Jan 2006" $day.Key }}</h3>
-      <ul class="jentry">
-        {{ range $p := $day.Pages }}
-          {{ partial "jentry" $p }}
-        {{ end }}
-      </ul>
-    {{ end }}
-    {{ if gt (len $jentry) 5 }}
-      <p>
-        <a href="/journal">All Journal Enteris</a>
-      </p>
-    {{ end }}
-  </section>
+  {{ if gt (len $latest) 0 }}
+    <hr/>
+    <h2 class="">Recent Logs</h2>
+    <section class="timeline">
+      {{/* $jentry should be a Pages collection */}}
+      {{ range $day := ($latest.GroupByDate "2006-01-02") }}
+        <h3>{{ time.Format "2 Jan 2006" $day.Key }}</h3>
+        <ul class="jentry">
+          {{ range $p := $day.Pages }}
+            {{ partial "jentry" $p }}
+          {{ end }}
+        </ul>
+      {{ end }}
+      {{ if gt (len $jentry) 5 }}
+        <p>
+          <a href="/journal">All Journal Enteris</a>
+        </p>
+      {{ end }}
+    </section>
+  {{ end }}
 
   <hr/>
   <h2 class="posts-item-note" aria-label="Recent Posts">Recent Articles</h2>
