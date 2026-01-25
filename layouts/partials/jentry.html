@@ -1,4 +1,4 @@
 <li language="{{ .Params.language | default "en" }}" dir="auto">
   <a href="{{ .RelPermalink }}"><span class="time">{{ time.Format "15:04:05" .Date }}</span></a>
-  <span>{{ .Content | plainify }}</span>
+  <span>{{ .Content }}</span>
 </li>
