@@ -2,3 +2,23 @@
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 0.9rem;
 }
+
+.timeline {
+  padding: 0;
+}
+
+.timeline h3 {
+  margin-top: 10px;
+}
+
+.jentry {
+  list-style: none;
+  padding: 0;
+}
+
+.jentry .time {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 0.9rem;
+  background-color: #c3e7d4;
+  padding: 5px;
+}

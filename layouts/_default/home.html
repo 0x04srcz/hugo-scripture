@@ -3,21 +3,43 @@
 <p class="subtitle">{{ .Site.Params.Author.Name }}</p>
 <section>{{ .Content }}
   <hr/>
+  <h2 class="">Recent Logs</h2>
+  {{ $jentry := where .Site.RegularPages "Section" "journal" }}
+  {{ $latest := first 5 (sort $jentry "Date" "desc") }}
+
+  <section class="timeline">
+    {{/* $jentry should be a Pages collection */}}
+    {{ range $day := ($latest.GroupByDate "2006-01-02") }}
+      <h3>{{ time.Format "2 Jan 2006" $day.Key }}</h3>
+      <ul class="jentry">
+        {{ range $p := $day.Pages }}
+          {{ partial "jentry" $p }}
+        {{ end }}
+      </ul>
+    {{ end }}
+    {{ if gt (len $jentry) 5 }}
+      <p>
+        <a href="/journal">All Journal Enteris</a>
+      </p>
+    {{ end }}
+  </section>
+
+  <hr/>
   <h2 class="posts-item-note" aria-label="Recent Posts">Recent Articles</h2>
   {{/* Show last 5 posts in reverse date order */}}
   {{ $pagesToShow := where .Site.RegularPages "Type" "in" site.Params.mainSections }}
   {{ $posts := $pagesToShow.ByDate.Reverse }}
   {{ range first 5 $posts }}
-  <ul>
-    {{ partial "postCard" . }}
-  </ul>
+    <ul>
+      {{ partial "postCard" . }}
+    </ul>
   {{ end }}
   {{ if gt (len $posts) 5 }}
-  <p>
-    {{ range $firstSection := (where .Site.Sections "Section" "in" (first 1 (.Site.Params.mainSections))) }}
-    <a href="{{ $firstSection.Permalink }}">All Posts</a>
-    {{ end }}
-  </p>
+    <p>
+      {{ range $firstSection := (where .Site.Sections "Section" "in" (first 1 (.Site.Params.mainSections))) }}
+        <a href="{{ $firstSection.Permalink }}">All Posts</a>
+      {{ end }}
+    </p>
   {{ end }}
 </section>
 
