@@ -40,3 +40,8 @@ li.log {
   margin: 20px auto;
   opacity: 0.2;
 }
+
+/* To support org-mode tags exported by ox-hugo */
+.tag span {
+  margin-right: 10px;
+}
