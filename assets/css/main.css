@@ -41,7 +41,35 @@ li.log {
   opacity: 0.2;
 }
 
-/* To support org-mode tags exported by ox-hugo */
-.tag span {
-  margin-right: 10px;
+
+/* Used in bookmarks.html */
+span.bookmarks {
+  counter-reset: h2;
 }
+
+span.bookmarks h2 {
+  counter-increment: h2;
+}
+
+span.bookmarks h2:before {
+  content: counter(h2) ". ";
+}
+
+span.tag {
+  display: block;
+}
+
+span.tag span, span.todo, span.done {
+  margin-right: 5px;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 0.9rem;
+  font-style: normal;
+  background-color: #034f2f;
+  padding: 5px;
+}
+
+span.todo {
+  background-color: var(--red);
+  color: var(--black);
+}
+/* End used in bookmarks.html */
