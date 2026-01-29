@@ -112,3 +112,9 @@ span.todo {
   justify-content: flex-end;
   flex-wrap: wrap;
 }
+
+@media (max-width: 760px) {
+  .meta-row {
+    width: 100%;
+  }
+}
