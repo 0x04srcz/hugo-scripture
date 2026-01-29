@@ -73,3 +73,24 @@ span.todo {
   color: var(--black);
 }
 /* End used in bookmarks.html */
+
+
+.share-links {
+  width: 50%;
+  text-align: right;
+  float: right;
+}
+
+.share-links svg {
+  display: inherit;
+}
+
+.share-links a[href^='http']::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0;
+  background-size: 0%;
+  background-image: none;
+}

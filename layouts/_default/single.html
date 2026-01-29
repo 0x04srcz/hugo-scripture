@@ -8,6 +8,7 @@
       <p class="subtitle">
         <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
       </p>
+      {{ partial "share-links.html" . }}
     {{ end }}
 
     {{ .Content }}
