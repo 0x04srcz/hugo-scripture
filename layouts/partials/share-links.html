@@ -60,15 +60,15 @@
   </svg>` | safeHTML -}}
 
 <div class="share-links">
-  <a rel="noopener nofollow" target="_blank"
+  <a rel="noopener nofollow" target="_blank" alt="Share on Mastodon"
     href="https://mastodonshare.com/share?text={{ $text }}">{{- $mastodonIcon -}}</a>
   •
-  <a rel="noopener nofollow" target="_blank"
+  <a rel="noopener nofollow" target="_blank" alt="Share on Bluesky"
     href="https://bsky.app/intent/compose?text={{ $text }}">{{ $bskyIcon }}</a>
   •
-  <a rel="noopener nofollow" target="_blank"
+  <a rel="noopener nofollow" target="_blank" alt="Share on Linkedin"
     href="https://www.linkedin.com/sharing/share-offsite/?url={{ $encURL }}">{{ $linkedinIcon }}</a>
   •
-  <a rel="noopener nofollow" target="_blank"
+  <a rel="noopener nofollow" target="_blank" alt="Share on Reddit"
     href="https://www.reddit.com/submit?url={{ $encURL }}&title={{ $encTitle }}">{{ $redditIcon }}</a>
 </div>
