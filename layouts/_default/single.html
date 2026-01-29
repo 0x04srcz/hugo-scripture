@@ -2,14 +2,16 @@
   <section language="{{ .Params.language }}">
     <h1>{{ .Title }}</h1>
 
-    {{ if .Date }}
+    <div class="meta-row">
+      {{ if .Date }}
       {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
       {{ $dateHuman := .Date | time.Format ":date_long" }}
       <p class="subtitle">
         <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
       </p>
+      {{ end }}
       {{ partial "share-links.html" . }}
-    {{ end }}
+    </div>
 
     {{ .Content }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}

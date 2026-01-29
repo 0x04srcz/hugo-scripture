@@ -76,9 +76,8 @@ span.todo {
 
 
 .share-links {
-  width: 50%;
   text-align: right;
-  float: right;
+  padding-top: 15px;
 }
 
 .share-links svg {
@@ -93,4 +92,23 @@ span.todo {
   margin-left: 0;
   background-size: 0%;
   background-image: none;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 55%;
+}
+
+.meta-row .subtitle {
+  margin: 0;
+}
+
+.meta-row .share-links {
+  display: flex;
+  gap: .5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
