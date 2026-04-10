@@ -14,11 +14,12 @@
     </div>
 
     {{ .Content }}
+    {{ $page := . }}
     {{ with .Params.canonical }}
     <div class="post-canonical">
       <p>
         Originally published at:
-        <a href="{{ . | absURL }}">{{ .Title }}</a>
+        <a href="{{ . | absURL }}">{{ $page.Title }}</a>
       </p>
     </div>
     {{ end }}
