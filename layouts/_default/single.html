@@ -14,6 +14,14 @@
     </div>
 
     {{ .Content }}
+    {{ with .Params.canonical }}
+    <div class="post-canonical">
+      <p>
+        Originally published at:
+        <a href="{{ . | absURL }}">{{ .Title }}</a>
+      </p>
+    </div>
+    {{ end }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     {{ partial "comments.html" . }}
     {{ partial "related.html" . }}
