@@ -2,12 +2,18 @@
 <h1>{{ .Site.Title }}</h1>
 <p class="subtitle">{{ .Site.Params.Author.Name }}</p>
 <section>{{ .Content }}
-  {{ $jentry := where .Site.RegularPages "Section" "journal" }}
+  {{/* Note sections come from params.shortformSections so this matches the
+       sections used for share text and feed autodiscovery. The per-section
+       layouts (layouts/journal/) are still named by Hugo's convention, so a
+       site renaming the section needs to supply its own list layout. */}}
+  {{ $shortform := site.Params.shortformSections | default (slice "journal") }}
+  {{ $jentry := where .Site.RegularPages "Section" "in" $shortform }}
   {{ $latest := first 5 (sort $jentry "Date" "desc") }}
+  {{ $shortformURL := printf "/%s" (index $shortform 0) }}
 
   {{ if gt (len $latest) 0 }}
   <hr/>
-  <h2 class="">Recent Logs <a href="/journal/index.xml" rel="noopener nofollow" target="_blank" alt="RSS feed for journal entries only"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
+  <h2 class="">Recent Logs <a href="{{ $shortformURL }}/index.xml" rel="noopener nofollow" target="_blank" alt="RSS feed for journal entries only"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rss-fill" viewBox="0 0 16 16">
     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2m0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2m.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
   </svg></a></h2>
   <section class="timeline">
@@ -20,11 +26,12 @@
       {{ end }}
     </ul>
     {{ end }}
-    {{ if gt (len $jentry) 5 }}
+    {{/* Always link the full listing, not only when it overflows the latest 5:
+         otherwise a site with fewer entries has no path to the section at
+         all. */}}
     <p>
-      <a href="/journal">All Journal Enteris</a>
+      <a href="{{ $shortformURL }}">All Journal Entries</a>
     </p>
-    {{ end }}
   </section>
   {{ end }}
 
