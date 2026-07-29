@@ -1,0 +1,18 @@
+{{- /*
+  Returns true when the given page belongs to a "shortform" section: the
+  micro-blog / note sections whose entries are written to be read in full
+  inline (see layouts/journal/list.html and partials/jentry.html).
+
+  Sections are configured site-side so the theme stays reusable:
+
+      [params]
+      shortformSections = ['journal']
+
+  Defaults to ['journal'], which is the section name the theme's own
+  journal layouts use.
+
+  Usage:
+      {{ $isShortform := partial "helpers/shortform.html" . }}
+*/ -}}
+{{- $sections := site.Params.shortformSections | default (slice "journal") -}}
+{{- return (in $sections .Section) -}}

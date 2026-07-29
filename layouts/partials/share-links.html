@@ -3,44 +3,102 @@
 {{- $url := .Permalink -}}
 {{- $title := .Title -}}
 
-{{- /* Prefer .Description; else .Summary; else a trimmed slice of body text */ -}}
-{{- $desc := "" -}}
-{{- with .Description -}}
-  {{- $desc = . -}}
+{{- /*
+  Shortform entries (see params.shortformSections) are already written to be
+  read as-is: they are notes, not articles. Composing them the article way --
+  title, then a truncated restatement of the body, then hashtags -- produces
+  share text that has to be hand-edited before it is postable, because the
+  title merely repeats the opening of the body.
+
+  So notes share as: body text, blank line, bare URL. Nothing else. That is
+  the text you would have typed by hand.
+*/ -}}
+{{- $isShortform := partial "helpers/shortform.html" . -}}
+
+{{- $text := "" -}}
+
+{{- if $isShortform -}}
+
+  {{- /*
+    The rendered body as plain text, shaped to read the way the page reads.
+
+    Structure has to be captured *before* plainify, because plainify drops the
+    tags that carry it and leaves only the source's own whitespace -- so two
+    paragraphs would come out separated by a single newline, indistinguishable
+    from a soft wrap. Sentinels survive plainify, and get turned into real
+    breaks afterwards:
+
+      <br>            -> one newline   (an explicit line break: verse, address)
+      start of a code line -> one newline  (Chroma wraps each line in a span
+                            whose trailing newline plainify would swallow,
+                            which turns a multi-line shell snippet into one
+                            unrunnable line)
+      end of a block  -> blank line    (paragraph, list item, heading, quote)
+
+    htmlUnescape last, so entities (&rsquo;, &amp;) become the characters a
+    reader actually sees rather than pasting literally into a toot.
+  */ -}}
+  {{- $body := .Content -}}
+  {{- $body = $body | replaceRE `(?i)<br\s*/?>` "@@SZLF@@" -}}
+  {{- /* Chroma line wrappers, both flavours: class-based (noClasses = false)
+         and inline-styled (noClasses = true). */ -}}
+  {{- $body = $body | replaceRE `(?i)<span class="line">` "@@SZLF@@<span>" -}}
+  {{- $body = $body | replaceRE `(?i)<span style="display:flex;">` "@@SZLF@@<span>" -}}
+  {{- $body = $body | replaceRE `(?i)</(p|li|h[1-6]|blockquote|pre|figure|div)>` "@@SZPARA@@" -}}
+  {{- $body = $body | plainify | htmlUnescape -}}
+  {{- $body = $body | replaceRE `[ \t]*@@SZLF@@[ \t]*` "\n" -}}
+  {{- $body = $body | replaceRE `\s*@@SZPARA@@\s*` "\n\n" -}}
+  {{- $body = $body | replaceRE `[ \t]+` " " -}}
+  {{- $body = $body | replaceRE `[ \t]+\n` "\n" -}}
+  {{- $body = $body | replaceRE `\n{3,}` "\n\n" -}}
+  {{- $body = trim $body "\n \t" -}}
+
+  {{- $text = printf "%s\n\n%s" $body $url -}}
+
 {{- else -}}
-  {{- with .Summary -}}
-    {{- $desc = . | plainify -}}
+
+  {{- /* Prefer .Description; else .Summary; else a trimmed slice of body text.
+         htmlUnescape because plainify strips tags but leaves entities, which
+         would otherwise paste into a toot literally as "I&rsquo;ve". */ -}}
+  {{- $desc := "" -}}
+  {{- with .Description -}}
+    {{- $desc = . | htmlUnescape -}}
+  {{- else -}}
+    {{- with .Summary -}}
+      {{- $desc = . | plainify | htmlUnescape -}}
+    {{- end -}}
   {{- end -}}
-{{- end -}}
 
-{{- /* Length control: set in config; defaults to 200 chars */ -}}
-{{- $max := site.Params.share.summaryLength | default 200 -}}
-{{- if gt $max 0 -}}
-  {{- $desc = $desc | truncate $max -}}
-{{- else -}}
-  {{- $desc = "" -}}
-{{- end -}}
-
-{{- /* Tags to hashtags; supports tags or keywords */ -}}
-{{- $tags := slice -}}
-{{- with .Params.tags }}{{ $tags = . }}{{ end -}}
-
-{{- $hashtags := slice -}}
-{{- range $tags -}}
-  {{- $t := . | plainify | htmlUnescape | lower | replaceRE `[^a-z0-9_]+` "" -}}
-  {{- if ne $t "" -}}
-    {{- $hashtags = $hashtags | append (printf "#%s" $t) -}}
+  {{- /* Length control: set in config; defaults to 200 chars */ -}}
+  {{- $max := site.Params.share.summaryLength | default 200 -}}
+  {{- if gt $max 0 -}}
+    {{- $desc = $desc | truncate $max -}}
+  {{- else -}}
+    {{- $desc = "" -}}
   {{- end -}}
-{{- end -}}
 
-{{- /* Share text: title + optional description + url + hashtags */ -}}
-{{- $parts := slice $title -}}
-{{- if ne $desc "" }}{{ $parts = $parts | append $desc }}{{ end -}}
-{{- $parts = $parts | append $url -}}
-{{- if gt (len $hashtags) 0 -}}
-  {{- $parts = $parts | append (delimit $hashtags " ") -}}
+  {{- /* Tags to hashtags; supports tags or keywords */ -}}
+  {{- $tags := slice -}}
+  {{- with .Params.tags }}{{ $tags = . }}{{ end -}}
+
+  {{- $hashtags := slice -}}
+  {{- range $tags -}}
+    {{- $t := . | plainify | htmlUnescape | lower | replaceRE `[^a-z0-9_]+` "" -}}
+    {{- if ne $t "" -}}
+      {{- $hashtags = $hashtags | append (printf "#%s" $t) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Share text: title + optional description + url + hashtags */ -}}
+  {{- $parts := slice $title -}}
+  {{- if ne $desc "" }}{{ $parts = $parts | append $desc }}{{ end -}}
+  {{- $parts = $parts | append $url -}}
+  {{- if gt (len $hashtags) 0 -}}
+    {{- $parts = $parts | append (delimit $hashtags " ") -}}
+  {{- end -}}
+  {{- $text = delimit $parts "\n\n" -}}
+
 {{- end -}}
-{{- $text := delimit $parts "\n\n" -}}
 
 {{- $encURL := $url | urlquery -}}
 {{- $encTitle := $title | urlquery -}}

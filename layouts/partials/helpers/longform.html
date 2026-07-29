@@ -1,0 +1,13 @@
+{{- /*
+  Returns true when the given page belongs to a "longform" section: the
+  full articles listed in `params.mainSections`, which get the article
+  metadata treatment (og:type=article, JSON-LD Article, share links with
+  a title, etc.).
+
+  Falls back to ['articles'], the section name the theme documents.
+
+  Usage:
+      {{ $isArticle := partial "helpers/longform.html" . }}
+*/ -}}
+{{- $sections := site.Params.mainSections | default (slice "articles") -}}
+{{- return (in $sections .Section) -}}

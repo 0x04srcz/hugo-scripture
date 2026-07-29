@@ -69,7 +69,18 @@ The home page presents two separate feeds.
 
 The latest 5 of each are shown on the home page. If there are more, a link to the full listing appears.
 
-Each section heading on the home page has a small RSS icon linking to the corresponding feed.
+Each section heading on the home page has a small RSS icon linking to the corresponding feed. Because `/index.xml` is articles-only, every page also advertises the journal feed via `<link rel="alternate">`, so a reader subscribing from the home page can find the notes.
+
+### Which sections are "short form"
+
+Journal entries are treated as [notes](https://indieweb.org/note) rather than articles: short, title-optional posts meant to be read in full where they are found. The theme uses this distinction to decide how to compose share text (see [Share Links](#share-links)) and which feeds to advertise.
+
+The sections that count as short form are configurable, and default to `['journal']`:
+
+```toml
+[params]
+shortformSections = ['journal']
+```
 
 ## Bookmarks Layout
 
@@ -120,7 +131,9 @@ The section only renders if at least one platform URL is available. You can supp
 
 Every article page displays share buttons for Mastodon, Bluesky, LinkedIn, and Reddit. These sit next to the publication date in a flex row.
 
-The share text is assembled automatically from the page title, description (or summary as fallback), permalink, and tags converted to hashtags. For example, a post tagged `["zig", "systems programming"]` would append `#zig #systemsprogramming` to the share text.
+Share text is composed differently for articles and for notes, because the two are read differently on the other end.
+
+**Articles** get title, description (or summary as fallback), permalink, and tags converted to hashtags. For example, a post tagged `["zig", "systems programming"]` would append `#zig #systemsprogramming` to the share text.
 
 The maximum length of the description in share text is configurable:
 
@@ -128,6 +141,19 @@ The maximum length of the description in share text is configurable:
 [params.share]
 summaryLength = 200  # characters, default
 ```
+
+**Notes** (any page in a [short form section](#which-sections-are-short-form)) get their body text followed by a blank line and the bare permalink. No title, no summary, no hashtag tail.
+
+The reason is that a note has no title worth repeating: the title is usually just the opening of the body, or a date stamp, so the article-shaped composition produces text that says the same thing twice and has to be hand-edited before it is postable. A note is already written to be posted as-is.
+
+The body is extracted from the rendered HTML, so what you share is what a reader sees:
+
+- entities become real characters (`&rsquo;` → `’`), rather than pasting literally
+- paragraph, list, and heading boundaries become blank lines
+- `<br>` becomes a single newline
+- each line of a code block keeps its own line, so a multi-line shell snippet stays runnable
+
+Note that fediverse servers impose their own limits (Mastodon's default is 500 characters, with URLs counted as 23 regardless of length), and the theme does not truncate. Keeping notes within budget is an authoring-time concern.
 
 No JavaScript is involved. The links are plain `<a>` tags pointing at each platform's share/compose URL.
 
@@ -211,11 +237,10 @@ The `meta/standard.html` partial generates a full set of meta tags on every page
 - `<link rel="alternate">` for translations and output formats (RSS, etc.)
 - `robots: noindex,follow` for taxonomy and term listing pages (keeps tag indexes out of search engines)
 
-For pages in the `articles` section, `meta/post.html` adds:
+For content pages in a `mainSections` or `shortformSections` section, `meta/post.html` adds:
 
-- `og:type = article` with `article:published_time`, `article:author`, `article:section`
-- Full JSON-LD `Article` schema with headline, author, publisher, word count, dates, and image
-- Pagination `<link>` tags (first, last, prev, next) on list pages
+- `og:type = article`, `og:url`, `article:published_time`, `article:modified_time`, `article:author`, `article:section`, and one `article:tag` per tag
+- JSON-LD with headline, author, publisher, word count, dates, and image — typed `Article` for longform and `BlogPosting` for notes
 
 ## Custom CSS Override
 
@@ -291,12 +316,13 @@ theme = 'hugo-scripture'
 [params]
   description = "Site description for meta tags"
   mainSections = ['articles']          # which sections count as "articles" on the home page
+  shortformSections = ['journal']       # which sections are notes (share text, feed autodiscovery)
   dateFormat = "2 Jan 2006"            # date display format (Go time format)
   gpgFingerprint = "YOUR_FINGERPRINT"
   keyoxideProfile = "https://keyoxide.org/..."
   fediverseCreator = "@you@mastodon.social"
   mastodonProfile = "https://mastodon.social/@you"
-  sitename = "My Site"                 # og:site_name value
+  sitename = "My Site"                 # og:site_name value (defaults to the site title)
 
 [params.author]
   name = "Your Name"                   # shown on home page subtitle, RSS, and meta tags
