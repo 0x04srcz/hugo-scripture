@@ -1,0 +1,25 @@
+{{- /*
+  Returns a page's rendered content with root-relative URLs made absolute,
+  ready to embed in a feed.
+
+  Feeds are read outside the site: in a reader's own window, in an email
+  digest, on another server that reproduced the item. A `src="/img/x.png"`
+  resolves against whatever origin is displaying it, so images silently
+  break and internal links go to the wrong host. RSS has no reliable base
+  URL of its own -- readers are not required to resolve against <link> --
+  so the content has to carry absolute URLs itself.
+
+  Only `/path` is rewritten. Absolute URLs (`https://…`) and
+  protocol-relative ones (`//cdn/…`) are left alone, the latter because
+  `[^/]` refuses a second slash.
+
+  Usage:
+      {{ partial "helpers/feed-content.html" . }}
+*/ -}}
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
+{{- $content := .Content -}}
+{{- $content = $content | replaceRE `(src|href)="(/[^/][^"]*)"` (printf `${1}="%s${2}"` $base) -}}
+{{- /* Also handle a bare "/" href, which the pattern above cannot match
+       since it requires a non-slash character after the leading slash. */ -}}
+{{- $content = $content | replaceRE `(src|href)="/"` (printf `${1}="%s/"` $base) -}}
+{{- return $content -}}

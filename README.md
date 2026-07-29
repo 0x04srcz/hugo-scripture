@@ -71,6 +71,19 @@ The latest 5 of each are shown on the home page. If there are more, a link to th
 
 Each section heading on the home page has a small RSS icon linking to the corresponding feed. Because `/index.xml` is articles-only, every page also advertises the journal feed via `<link rel="alternate">`, so a reader subscribing from the home page can find the notes.
 
+### Feeds carry full content
+
+Every feed sends the whole rendered piece, not a summary — articles as well as notes. A subscriber can read in their reader without being bounced back to the site.
+
+Root-relative URLs in that content are rewritten to absolute ones, because a feed is read outside the site: `src="/ox-hugo/x.png"` would otherwise resolve against whatever origin is displaying the item. Already-absolute and protocol-relative URLs are left alone.
+
+Section titles in feeds come from the same lookup as section headings, so a section is named identically in both. Hugo auto-titles a section with no `_index` file by pluralising the directory name, so set an explicit title if the default reads badly:
+
+```toml
+[params.sectionTitles]
+journal = 'Journal Entries'
+```
+
 ### Which sections are "short form"
 
 Journal entries are treated as [notes](https://indieweb.org/note) rather than articles: short, title-optional posts meant to be read in full where they are found. The theme uses this distinction to decide how to compose share text (see [Share Links](#share-links)) and which feeds to advertise.

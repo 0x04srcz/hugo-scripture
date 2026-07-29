@@ -52,7 +52,10 @@
       <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       {{- with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
       <guid>{{ .Permalink }}</guid>
-      <description>{{ .Summary | transform.XMLEscape | safeHTML }}</description>
+      {{- /* Full content rather than a summary, matching _default/rss.xml: a
+             feed reader should be able to read the piece without being sent
+             back to the site. URLs absolutised for the same reason. */}}
+      <description>{{ partial "helpers/feed-content.html" . | transform.XMLEscape | safeHTML }}</description>
     </item>
     {{- end }}
   </channel>
