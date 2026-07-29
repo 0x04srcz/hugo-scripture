@@ -1,0 +1,23 @@
+{{- /*
+  Returns a stable identifier for a note, used as the key in the syndication
+  manifest and the syndication ledger.
+
+  Denote names files `20260416T114051--some-slug__tag.org`, and the leading
+  timestamp is assigned once at creation. Retitling a note changes its slug
+  and therefore its permalink, but not this. That matters because the ledger
+  is what stops a note being posted twice: keyed by permalink, retitling an
+  already-syndicated note would make it look new and post it again.
+
+  Pages not named by Denote fall back to the permalink, which is stable
+  enough as long as they are not moved.
+
+  Usage:
+      {{ $id := partial "helpers/note-id.html" . }}
+*/ -}}
+{{- $id := .Permalink -}}
+{{- with .File -}}
+  {{- with (findRE `^[0-9]{8}T[0-9]{6}` .ContentBaseName 1) -}}
+    {{- $id = index . 0 -}}
+  {{- end -}}
+{{- end -}}
+{{- return $id -}}

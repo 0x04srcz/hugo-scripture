@@ -1,0 +1,29 @@
+{{- /*
+  Machine-readable manifest of short-form notes, for a syndication job to
+  post elsewhere (POSSE). Emitted at /syndication.json by the custom output
+  format of the same name; see the README.
+
+  Everything here is already public on the site. The point of the file is
+  that a script should not have to scrape HTML to find out what exists and
+  what its text is -- and, more importantly, that the text it posts is
+  produced by the same partial as the site's own share links, so posting by
+  hand and posting by script cannot drift apart.
+
+  `id` is the Denote identifier from the filename (20260416T114051), which
+  is stable across retitling and reslugging, and therefore the right
+  idempotency key. Pages without one fall back to the permalink.
+*/ -}}
+{{- $shortform := site.Params.shortformSections | default (slice "journal") -}}
+{{- $notes := where site.RegularPages "Section" "in" $shortform -}}
+{{- $items := slice -}}
+{{- range (sort $notes "Date" "desc") -}}
+  {{- $items = $items | append (dict
+      "id" (partial "helpers/note-id.html" .)
+      "url" .Permalink
+      "title" .Title
+      "date" (.Date.Format "2006-01-02T15:04:05Z07:00")
+      "tags" (.Params.tags | default (slice))
+      "text" (partial "helpers/note-plaintext.html" .)
+    ) -}}
+{{- end -}}
+{{- dict "site" site.Title "baseURL" site.BaseURL "notes" $items | jsonify (dict "indent" "  ") -}}

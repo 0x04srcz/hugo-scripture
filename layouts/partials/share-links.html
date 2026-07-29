@@ -19,39 +19,9 @@
 
 {{- if $isShortform -}}
 
-  {{- /*
-    The rendered body as plain text, shaped to read the way the page reads.
-
-    Structure has to be captured *before* plainify, because plainify drops the
-    tags that carry it and leaves only the source's own whitespace -- so two
-    paragraphs would come out separated by a single newline, indistinguishable
-    from a soft wrap. Sentinels survive plainify, and get turned into real
-    breaks afterwards:
-
-      <br>            -> one newline   (an explicit line break: verse, address)
-      start of a code line -> one newline  (Chroma wraps each line in a span
-                            whose trailing newline plainify would swallow,
-                            which turns a multi-line shell snippet into one
-                            unrunnable line)
-      end of a block  -> blank line    (paragraph, list item, heading, quote)
-
-    htmlUnescape last, so entities (&rsquo;, &amp;) become the characters a
-    reader actually sees rather than pasting literally into a toot.
-  */ -}}
-  {{- $body := .Content -}}
-  {{- $body = $body | replaceRE `(?i)<br\s*/?>` "@@SZLF@@" -}}
-  {{- /* Chroma line wrappers, both flavours: class-based (noClasses = false)
-         and inline-styled (noClasses = true). */ -}}
-  {{- $body = $body | replaceRE `(?i)<span class="line">` "@@SZLF@@<span>" -}}
-  {{- $body = $body | replaceRE `(?i)<span style="display:flex;">` "@@SZLF@@<span>" -}}
-  {{- $body = $body | replaceRE `(?i)</(p|li|h[1-6]|blockquote|pre|figure|div)>` "@@SZPARA@@" -}}
-  {{- $body = $body | plainify | htmlUnescape -}}
-  {{- $body = $body | replaceRE `[ \t]*@@SZLF@@[ \t]*` "\n" -}}
-  {{- $body = $body | replaceRE `\s*@@SZPARA@@\s*` "\n\n" -}}
-  {{- $body = $body | replaceRE `[ \t]+` " " -}}
-  {{- $body = $body | replaceRE `[ \t]+\n` "\n" -}}
-  {{- $body = $body | replaceRE `\n{3,}` "\n\n" -}}
-  {{- $body = trim $body "\n \t" -}}
+  {{- /* Shared with the syndication manifest, so the text posted by hand and
+         the text posted by the syndication job are byte-identical. */ -}}
+  {{- $body := partial "helpers/note-plaintext.html" . -}}
 
   {{- $text = printf "%s\n\n%s" $body $url -}}
 

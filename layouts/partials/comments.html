@@ -6,6 +6,21 @@
   {{ $hackerNewsURL := .Params.hackernews_url }}
   {{ $youtubeURL := .Params.youtube_url }}
 
+  {{/* Notes posted by the syndication job record their status URL in
+       data/syndication.json, keyed by note id. Front matter still wins: it is
+       hand-written and specific, and for articles it is the only source.
+
+       The data file cannot come from front matter for notes, because
+       content/*.md is generated from content-src/*.org by ox-hugo -- writing
+       back into it would be overwritten on the next save. */}}
+  {{ with hugo.Data.syndication }}
+    {{ $id := partial "helpers/note-id.html" $ }}
+    {{ with index . $id }}
+      {{ if not $mastodonURL }}{{ $mastodonURL = .mastodon_url }}{{ end }}
+      {{ if not $bskyURL }}{{ $bskyURL = .bsky_url }}{{ end }}
+    {{ end }}
+  {{ end }}
+
   {{/* Global channels */}}
   {{ $matrixURL := .Site.Params.comments.matrixUrl }}
   {{ $ircURL    := .Site.Params.comments.ircUrl }}
