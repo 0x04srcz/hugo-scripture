@@ -1,0 +1,31 @@
+{{- /*
+  Returns a display title for a section page.
+
+  Hugo auto-titles a section that has no _index file by pluralising the
+  directory name, so `content/journal/` becomes "Journals". That is the
+  wrong word for a journal, and it leaks into anything that names the
+  section: page headings, feed titles, link text.
+
+  When the section supplies its own _index file its title wins. Otherwise
+  fall back to `params.sectionTitles.<section>` if set, and finally to a
+  humanised directory name.
+
+      [params.sectionTitles]
+      journal = 'Journal Entries'
+
+  Usage, with a section page as the context:
+      {{ $title := partial "helpers/section-title.html" $sectionPage }}
+*/ -}}
+{{- $title := "" -}}
+{{- if .File -}}
+  {{- /* The section has an _index file: its own title is authoritative. */ -}}
+  {{- $title = .Title -}}
+{{- else -}}
+  {{- $configured := index (site.Params.sectionTitles | default dict) .Section -}}
+  {{- with $configured -}}
+    {{- $title = . -}}
+  {{- else -}}
+    {{- $title = .Section | humanize | title -}}
+  {{- end -}}
+{{- end -}}
+{{- return $title -}}

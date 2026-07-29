@@ -62,7 +62,7 @@
 {{- end -}}
 {{- range $shortform -}}
   {{- with site.GetPage (printf "/%s" .) -}}
-    {{- $sectionTitle := .Title -}}
+    {{- $sectionTitle := partial "helpers/section-title.html" . -}}
     {{- with .OutputFormats.Get "RSS" -}}
       {{- if not (in $alreadyLinked .Permalink) -}}
         <link rel="alternate" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ $sectionTitle }} on {{ site.Title }}">

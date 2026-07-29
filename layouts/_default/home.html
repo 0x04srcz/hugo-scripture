@@ -30,7 +30,7 @@
          otherwise a site with fewer entries has no path to the section at
          all. */}}
     <p>
-      <a href="{{ $shortformURL }}">All Journal Entries</a>
+      <a href="{{ $shortformURL }}">All {{ with site.GetPage $shortformURL }}{{ partial "helpers/section-title.html" . }}{{ else }}Journal Entries{{ end }}</a>
     </p>
   </section>
   {{ end }}
