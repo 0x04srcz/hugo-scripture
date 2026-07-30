@@ -1,0 +1,73 @@
+{{- /*
+  Replies to this post's syndicated copy, rendered statically.
+
+  Reads data/replies.json, keyed by the same note id as the syndication
+  ledger (see helpers/note-id.html):
+
+      { "20260416T114051": { "replies": [ { id, url, created_at,
+          author: { name, acct, url, avatar }, text, favourites, reblogs } ] } }
+
+  Everything is fetched at build time and baked into the page: no JavaScript,
+  no third-party embed, nothing the reader's browser requests from another
+  server. Avatars are deliberately NOT rendered as <img> for that reason ---
+  a remote avatar would leak every reader's IP to whichever instance hosts
+  it, which is exactly the tracking this theme avoids elsewhere.
+
+  Reply text arrives already reduced to plain text by posse-backfeed, which
+  strips tags before decoding entities. It is printed here without safeHTML
+  so Go escapes it again: a stranger's markup should not reach the page even
+  if the upstream stripping ever regresses.
+*/ -}}
+{{- $entry := "" -}}
+{{- with hugo.Data.replies -}}
+  {{- $entry = index . (partial "helpers/note-id.html" $) -}}
+{{- end -}}
+{{- with $entry -}}
+  {{- with .replies -}}
+    <section class="post-replies">
+      <h2>Replies</h2>
+      <p class="subtitle">
+        From the fediverse, fetched when this page was built.
+        {{ with $.Params.mastodon_url }}<a href="{{ . }}" rel="noopener nofollow" target="_blank">Join the thread</a>.{{ end }}
+      </p>
+      <ol class="replies">
+        {{- range . }}
+          {{/* h-cite marks each reply up as a citation of another post, so the
+               page is machine-readable as a conversation rather than as one
+               post with decorative text below it.
+               https://microformats.org/wiki/h-cite */}}
+          <li class="reply h-cite">
+            <p class="reply-meta">
+              <span class="p-author h-card">
+                <a class="p-name u-url" href="{{ .author.url }}" rel="noopener nofollow" target="_blank">{{ .author.name }}</a>
+                <span class="reply-acct">@{{ .author.acct }}</span>
+              </span>
+              {{/* time.Format, not .Format: the localised layout names
+                   (:date_long) are a Hugo feature, and .Format on a bare
+                   time.Time passes them to Go verbatim, printing ":date_long"
+                   literally. */}}
+              <a class="u-url" href="{{ .url }}" rel="noopener nofollow" target="_blank">
+                <time class="dt-published" datetime="{{ .created_at }}">{{ time.Format ":date_long" .created_at }}</time>
+              </a>
+            </p>
+            {{/* Newlines become real breaks by splitting, not by rendering
+                 markup: each fragment goes through Go's escaper on its own, so
+                 a stranger's text can never contribute tags. Deliberately not
+                 markdownify, which would interpret their text as markup. */}}
+            <div class="p-content">
+              {{- range $para := split .text "\n\n" }}
+                {{- with trim $para " \t\n" }}
+                  <p>
+                    {{- range $i, $line := split . "\n" }}
+                      {{- if $i }}<br>{{ end }}{{ $line }}
+                    {{- end }}
+                  </p>
+                {{- end }}
+              {{- end }}
+            </div>
+          </li>
+        {{- end }}
+      </ol>
+    </section>
+  {{- end -}}
+{{- end -}}

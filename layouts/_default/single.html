@@ -1,19 +1,39 @@
 {{ define "main" }}
-  <section language="{{ .Params.language }}">
-    <h1>{{ .Title }}</h1>
+  {{/* h-entry marks this page as a post for microformats consumers: a
+       webmention sender deciding what it is replying to, a reader extracting
+       the content, an ActivityPub bridge deciding whether this is a note or an
+       article. See partials/helpers/hcard.html for the author, and the
+       p-name note below for why the title is not marked up on short-form
+       entries. */}}
+  {{ $isShortform := partial "helpers/shortform.html" . }}
+  <section language="{{ .Params.language }}" class="h-entry">
+    {{/* Post Type Discovery classifies an entry with a p-name that is not a
+         prefix of its content as an *article*, and consumers render articles
+         as a title plus a link stub rather than showing the text inline. A
+         note is written to be read where it is found, so it must not expose a
+         p-name --- even though Denote gives every file a title and the heading
+         below still displays it.
+         https://indieweb.org/post-type-discovery */}}
+    <h1{{ if not $isShortform }} class="p-name"{{ end }}>{{ .Title }}</h1>
+
+    {{ partial "helpers/hcard.html" (dict "author" true) }}
 
     <div class="meta-row">
       {{ if .Date }}
       {{ $dateMachine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
       {{ $dateHuman := .Date | time.Format ":date_long" }}
       <p class="subtitle">
-        <time datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
+        <time class="dt-published" datetime="{{ $dateMachine }}">{{ $dateHuman }}</time>
       </p>
       {{ end }}
       {{ partial "share-links.html" . }}
     </div>
 
-    {{ .Content }}
+    {{/* u-url must be the canonical permalink, which is what a consumer keys
+         a mention against. Hidden for the same reason as the h-card. */}}
+    <a class="u-url" href="{{ .Permalink }}" hidden>{{ .Permalink }}</a>
+
+    <div class="e-content">{{ .Content }}</div>
     {{ $page := . }}
     {{ with .Params.canonical }}
     <div class="post-canonical">
@@ -24,6 +44,7 @@
     </div>
     {{ end }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+    {{ partial "replies.html" . }}
     {{ partial "comments.html" . }}
     {{ partial "related.html" . }}
   </section>

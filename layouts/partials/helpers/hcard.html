@@ -1,0 +1,43 @@
+{{- /*
+  The site's h-card, in one of two roles.
+
+  Called with a dict:
+
+      {{ partial "helpers/hcard.html" (dict "author" true) }}   inside an h-entry
+      {{ partial "helpers/hcard.html" (dict "author" false) }}  standalone
+
+  With author=true it carries `p-author`, so a parser attaches it to the
+  enclosing h-entry as that post's author. With author=false it is a
+  top-level h-card whose u-url and u-uid both point at the site root, which
+  is what makes it the *representative* h-card for the domain: a consumer
+  that fetches the site and finds an h-card whose u-url matches the URL it
+  fetched treats that card as the identity of the site itself.
+
+  Emitted with `hidden` rather than hidden in CSS: microformats parsers read
+  the DOM, so the element is still parsed, while `display: none` in a
+  stylesheet is a rendering concern a parser never sees. It carries no
+  visible text either way.
+
+  rel=me on the fediverse profile is what links the two identities in both
+  directions, given the profile links back here.
+
+  https://microformats.org/wiki/h-card
+  https://microformats.org/wiki/representative-h-card-parsing
+*/ -}}
+{{- $isAuthor := .author | default false -}}
+{{- $name := "" -}}
+{{- with site.Params.author -}}
+  {{- if reflect.IsMap . -}}
+    {{- $name = .name | default site.Title -}}
+  {{- else -}}
+    {{- $name = . -}}
+  {{- end -}}
+{{- end -}}
+{{- $name = $name | default site.Title -}}
+<span class="{{ if $isAuthor }}p-author {{ end }}h-card" hidden>
+  <a class="p-name u-url" href="{{ site.BaseURL }}">{{ $name }}</a>
+  <span class="u-uid">{{ site.BaseURL }}</span>
+  {{- with site.Params.mastodonProfile }}
+  <a class="u-url" rel="me" href="{{ . }}">{{ . }}</a>
+  {{- end }}
+</span>

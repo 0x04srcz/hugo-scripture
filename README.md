@@ -427,3 +427,41 @@ These front matter keys are consumed by the theme:
 | `youtube_url` | string | Per-post YouTube discussion link |
 | `category` | string | Used in `article:section` and `news_keywords` meta |
 | `layout` | string | Set to `"bookmarks"` for the bookmarks layout |
+
+### Backfeed: replies rendered statically
+
+Drop a `data/replies.json` keyed by note id and each post renders the replies to its syndicated copy:
+
+```json
+{
+  "20260416T114051": {
+    "replies": [
+      {
+        "id": "117007900414073714",
+        "url": "https://hachyderm.io/@someone/117007900371714227",
+        "created_at": "2026-07-30T08:07:50.000Z",
+        "author": {
+          "name": "Someone",
+          "acct": "someone@hachyderm.io",
+          "url": "https://hachyderm.io/@someone"
+        },
+        "text": "Plain text. Blank lines become paragraphs."
+      }
+    ]
+  }
+}
+```
+
+Everything is baked in at build time — no JavaScript, no third-party embed, and **no avatar images**: a remote avatar would leak every reader's IP to whichever instance hosts it. Reply text is printed through Go's escaper rather than `safeHTML`, so a stranger's markup cannot reach the page.
+
+Each reply is marked up as an `h-cite` inside the post's `h-entry`, so the page is machine-readable as a conversation.
+
+## Microformats2
+
+Posts carry [microformats2](https://microformats.org/wiki/microformats2) markup, which is what lets webmention senders, feed readers, and fediverse bridges understand the page:
+
+- `h-entry` on each post (and on each journal entry in a listing), with `e-content`, `dt-published`, `u-url`, and an inline `p-author h-card`
+- A representative `h-card` on the home page, with `rel="me"` to the fediverse profile
+- **No `p-name` on short-form entries.** [Post Type Discovery](https://indieweb.org/post-type-discovery) classifies an entry whose name is not a prefix of its content as an *article*, and consumers render articles as a title plus a link stub instead of showing the text. Notes are written to be read where they are found, so the title is displayed but not marked up. Articles do carry `p-name`.
+
+The markup is emitted on hidden elements where it has no visible counterpart, rather than being hidden with CSS: parsers read the DOM, so a `hidden` attribute is still parsed while `display: none` is a rendering concern they never see.

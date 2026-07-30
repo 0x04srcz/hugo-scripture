@@ -1,5 +1,12 @@
-<li class="log">
-  <a href="{{ .RelPermalink }}"><span class="time">{{ time.Format "15:04:05" .Date }}</span></a>
-  <span>{{ .Content }}</span>
+{{- /* One journal entry in a listing. h-entry so the listing is machine
+       readable too, not just the entry's own page --- a webmention sender or
+       feed reader that lands on /journal/ can extract each entry. No p-name,
+       for the same reason as _default/single.html: Post Type Discovery would
+       classify these as articles and consumers would render them as link
+       stubs instead of showing the text. */ -}}
+<li class="log h-entry">
+  <a class="u-url" href="{{ .RelPermalink }}"><time class="dt-published" datetime="{{ .Date | time.Format "2006-01-02T15:04:05-07:00" }}"><span class="time">{{ time.Format "15:04:05" .Date }}</span></time></a>
+  <span class="e-content">{{ .Content }}</span>
+  {{ partial "helpers/hcard.html" (dict "author" true) }}
 </li>
 <hr/>

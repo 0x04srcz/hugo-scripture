@@ -1,4 +1,9 @@
 {{ define "main" }}
+  {{/* The representative h-card for this domain: its u-url matches the URL a
+       consumer fetched to get here, which is what identifies it as the
+       identity of the site rather than of a post. Needed by webmention
+       senders and IndieAuth. */}}
+  {{ partial "helpers/hcard.html" (dict "author" false) }}
 <h1>{{ .Site.Title }}</h1>
 <p class="subtitle">{{ .Site.Params.Author.Name }}</p>
 <section>{{ .Content }}

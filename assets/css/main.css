@@ -118,3 +118,43 @@ span.todo {
     width: 100%;
   }
 }
+
+/* Used in replies.html: fediverse replies fetched at build time. Kept close
+   to the Tufte body width so a thread reads as part of the page rather than
+   as a widget bolted on. */
+.post-replies .subtitle {
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+ol.replies {
+  list-style: none;
+  padding-left: 0;
+  width: 55%;
+}
+
+li.reply {
+  margin-bottom: 1.6rem;
+  padding-left: 1rem;
+  border-left: 2px solid currentColor;
+  opacity: 0.95;
+}
+
+li.reply .reply-meta {
+  margin-bottom: 0.2rem;
+  font-size: 1.1rem;
+}
+
+li.reply .reply-acct {
+  opacity: 0.6;
+}
+
+li.reply .p-content p {
+  margin: 0.4rem 0;
+}
+
+@media (max-width: 760px) {
+  ol.replies {
+    width: 100%;
+  }
+}
