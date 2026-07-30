@@ -32,7 +32,7 @@ Live example: [sourcery.zone](https://sourcery.zone)
 Add the theme as a git submodule:
 
 ```bash
-git submodule add https://github.com/sourcery-zone/hugo-scripture.git themes/hugo-scripture
+git submodule add https://git.sourcery.zone/hugo-scripture themes/hugo-scripture
 ```
 
 Then set it in your `hugo.toml`:

@@ -1,31 +1,23 @@
-name = 'Theme name'
+name = 'Hugo Scripture'
 license = 'MIT'
-licenselink = 'https://github.com/owner/repo/LICENSE'
-description = 'Theme description'
+licenselink = 'https://git.sourcery.zone/hugo-scripture/tree/LICENSE'
+description = 'A Tufte CSS theme with sidenotes, a journal/articles split, decentralized discussions, and automatic OG images.'
 
 # The home page of the theme, where the source can be found
-homepage = 'https://github.com/owner/repo'
+homepage = 'https://git.sourcery.zone/hugo-scripture'
 
 # If you have a running demo of the theme
-demosite = 'https://owner.github.io/repo'
+demosite = 'https://sourcery.zone'
 
 # Taxonomy terms
-tags = ['blog', 'company']
-features = ['some', 'awesome', 'features']
+tags = ['blog', 'personal', 'minimal', 'tufte', 'indieweb', 'dark']
+features = ['sidenotes', 'journal', 'rss', 'og-images', 'webmentions', 'posse', 'dark-mode', 'tor']
 
-# If the theme has multiple authors
-authors = [
-  {name = 'Name of author', homepage = 'Website of author'},
-  {name = 'Name of author', homepage = 'Website of author'}
-]
-
-# If the theme has a single author
 [author]
-  name = 'Your name'
-  homepage = 'Your website'
+  name = 'Sourcerer'
+  homepage = 'https://sourcery.zone'
 
-# If porting an existing theme
 [original]
-  author = 'Name of original author'
-  homepage = 'Website of original author'
-  repo = 'https://github.com/owner/repo'
+  author = 'Edward Tufte / Dave Liepmann (Tufte CSS)'
+  homepage = 'https://edwardtufte.github.io/tufte-css/'
+  repo = 'https://github.com/edwardtufte/tufte-css'
